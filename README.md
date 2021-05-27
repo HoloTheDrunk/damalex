@@ -1,0 +1,2 @@
+# damalex
+Checkers project
