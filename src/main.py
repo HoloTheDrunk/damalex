@@ -2,7 +2,7 @@ from checker import *
 
 
 def main():
-    checker: Checker = Checker(8)
+    checker: Checker = Checker(size=int(input("Size: ")), lines=int(input("Lines: ")))
     print(checker)
 
 

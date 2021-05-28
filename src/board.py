@@ -1,3 +1,6 @@
+from typing import *
+
+
 class Board:
     def __init__(self, size: int):
         self.size = size
@@ -8,8 +11,8 @@ class Board:
 
         for j in range(self.size):
             for i in range(self.size - 1):
-                s += str(self.grid[i][j]) + ' '
-            s += str(self.grid[self.size - 1][j]) + '\n'
+                s += (' ' if self.grid[i][j] >= 0 else '') + str(self.grid[i][j]) + ' '
+            s += (' ' if self.grid[self.size - 1][j] >= 0 else '') + str(self.grid[self.size - 1][j]) + '\n'
 
         return s
 

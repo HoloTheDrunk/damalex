@@ -11,8 +11,8 @@ from player import *
 
 
 class Checker:
-    def __init__(self, size: int):
-        self.board: Board = Board(size)
+    def __init__(self, size: int, lines: int):
+        self.board: Board = Board(size, lines)
         self.players: Player = Player(size * 2)
 
         self.turn: int = 0
@@ -53,16 +53,16 @@ class Checker:
             if distance == 2 and self.board.get(goalX, goalY) == Cell.Empty:
                 return distance
             elif distance == 4:
-                middle = self.board.get(startX + (1 if goalX - startX > 0 else -1),
-                                        startY + (1 if goalY - startY > 0 else -1))
+                middle: int = self.board.get(startX + (1 if goalX - startX > 0 else -1),
+                                             startY + (1 if goalY - startY > 0 else -1))
                 if middle == -player or middle == -2 * player:
                     return distance
             # elif distance > 4 and self.board.get(startX, startY) == player*2
             #    self.board.get(startX, startY) == 2 and self.board.get(goalX, goalY) == Cell.Empty):
 
     def check_diagonal_for_enemies(self, startX: int, startY: int, goalX: int, goalY: int, player: int):
-        player = player * 2 - 1
-        offset = (goalX - startX, goalY - startY)
+        player: int = player * 2 - 1
+        offset: (int, int) = (goalX - startX, goalY - startY)
 
         for i in range(abs(goalX - startX)):
             if (self.board.get(startX + offset[0], startY + offset[1]) == -player
