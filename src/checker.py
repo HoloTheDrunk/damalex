@@ -32,13 +32,10 @@ class Checker:
         :param y: y position of the cell to move
         :param goalX: x position of its new place
         :param goalY: y position of its new place
-        :return:
         """
         # "Move" piece
         self.board.set(goalX, goalY, self.board.get(x, y))
         self.board.set(x, y, Cell.Empty)
-
-        return Move.Moved
 
     def check_move(self, startX: int, startY: int, goalX: int, goalY: int):
         """
@@ -71,14 +68,41 @@ class Checker:
         :return: Tuple containing the first enemy position
         :rtype: ((int, int), (int, int))
         """
+        if not self.contains(startX, startY):
+            raise ValueError("check_diagonal_for_edible: Start coordinates out of bounds.")
+        if not self.contains(goalX, goalY):
+            raise ValueError("check_diagonal_for_edible: Goal coordinates out of bounds.")
+
         offset: (int, int) = (goalX - startX, goalY - startY)
+        normOffset: (int, int) = (offset[0] // abs(offset[0]), offset[1] // abs(offset[1]))
 
-        for i in range(abs(goalX - startX)):
-            if (self.board.get(startX + offset[0], startY + offset[1]) == -player
-                    or self.board.get(startX + i, startY + i) == -2 * player):
-                return True
+        for i in range(0, offset[0], normOffset[0]):
+            for j in range(0, offset[1], normOffset[1]):
+                if (self.board.get(startX + i, startY + j) == -self.player
+                        or self.board.get(startX + i, startY + j) == -2 * self.player):
+                    return ((startX + i, startY + j),
+                            (self.get_empty_diagonal_end(startX + i + normOffset[0],
+                                                         startY + j + normOffset[1],
+                                                         normOffset)))
+        return None, self.get_empty_diagonal_end(startX + normOffset[0], startY + normOffset[1], normOffset)
 
-        return False
+    def get_empty_diagonal_end(self, x: int, y: int, normOffset: (int, int)):
+        """
+        Finds the end of a diagonal of empty cells.
+        :param x: x coordinate of first empty cell
+        :param y: y coordinate of first empty cell
+        :param normOffset: normalized direction offset
+        :type normOffset: (int, int)
+        :return: x and y coordinate tuple of the last empty cell or None if none are found
+        :rtype: (int, int)
+        """
+        if self.contains(x, y) and self.board.get(x, y) == Cell.Empty:
+            while (self.contains(x + normOffset[0], y + normOffset[1])
+                   and self.board.get(x + normOffset[0], y + normOffset[1]) == Cell.Empty):
+                x += normOffset[0]
+                y += normOffset[1]
+            return x, y
+        return None
 
     def contains(self, x: int, y: int):
         return 0 < x < self.board.size and 0 < y < self.board.size
