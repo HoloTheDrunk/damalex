@@ -1,5 +1,7 @@
 from typing import *
 
+from colours import *
+
 
 class Board:
     def __init__(self, size: int):
@@ -7,11 +9,27 @@ class Board:
         self.grid = [[Cell.Empty for j in range(size)] for i in range(size)]
 
     def __str__(self):
-        s: str = ""
+        s: str = "ji"
 
+        for i in range(self.size):
+            s += str(i) + '  '
+        s += '\n'
         for j in range(self.size):
+            s += str(j)
             for i in range(self.size - 1):
-                s += (' ' if self.grid[i][j] >= 0 else '') + str(self.grid[i][j]) + ' '
+                if self.grid[i][j] > 0:
+                    s += Colour.WHITE
+                elif self.grid[i][j] < 0:
+                    s += Colour.BLACK
+                else:
+                    s += Colour.RESET
+                s += (' ' if self.grid[i][j] >= 0 else '') + str(self.grid[i][j]) + ' ' + Colour.RESET
+            if self.grid[self.size - 1][j] > 0:
+                s += Colour.WHITE
+            elif self.grid[self.size - 1][j] < 0:
+                s += Colour.BLACK
+            else:
+                s += Colour.RESET
             s += (' ' if self.grid[self.size - 1][j] >= 0 else '') + str(self.grid[self.size - 1][j]) + '\n'
 
         return s

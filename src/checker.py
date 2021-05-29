@@ -13,10 +13,10 @@ from player import *
 class Checker:
     def __init__(self, size: int, lines: int):
         self.board: Board = Board(size, lines)
-        self.players: Player = Player(size * 2)
+        self.players: List[Player] = [Player(size * 2, Colour.WHITE), Player(size * 2, Colour.BLACK)]
 
         self.turn: int = 0
-        self.player: int = 0
+        self.player: int = 1
 
     def __str__(self):
         return str(self.board)
@@ -25,29 +25,30 @@ class Checker:
         self.board.set(x, y, self.turn)
         self.turn = 1 - self.turn
 
-    def move(self, x: int, y: int, goalX: int, goalY: int, player: int):
-        # Receive player as 0/1 value, change to -1/1
-        player = 2 * player - 1
-
-        # Check if move is valid
-        check: int = self.check_move(x, y, goalX, goalY, player)
-
-        # Invalid move
-        if check == -1:
-            return Move.Invalid
-
+    def move(self, x: int, y: int, goalX: int, goalY: int):
+        """
+        Move the cell at (x, y) to (goalX, goalY)
+        :param x: x position of the cell to move
+        :param y: y position of the cell to move
+        :param goalX: x position of its new place
+        :param goalY: y position of its new place
+        :return:
+        """
         # "Move" piece
         self.board.set(goalX, goalY, self.board.get(x, y))
         self.board.set(x, y, Cell.Empty)
 
-        # Only takes pawns into account for now
-        if check == 4:
-            self.jump(x, y, goalX, goalY)
-            return Move.Jumped
-
         return Move.Moved
 
-    def check_move(self, startX: int, startY: int, goalX: int, goalY: int, player: int):
+    def check_move(self, startX: int, startY: int, goalX: int, goalY: int):
+        """
+        Check if the chosen move from (startX, startY) to (goalX, goalY) is valid
+        :param startX: x position of starting point
+        :param startY: y position of starting point
+        :param goalX: x position of ending point
+        :param goalY: y position of ending point
+        :return: bool
+        """
         if self.contains(goalX, goalY):
             distance: int = abs(startX - goalX + startY - goalY)
             if distance == 2 and self.board.get(goalX, goalY) == Cell.Empty:
@@ -60,14 +61,24 @@ class Checker:
             # elif distance > 4 and self.board.get(startX, startY) == player*2
             #    self.board.get(startX, startY) == 2 and self.board.get(goalX, goalY) == Cell.Empty):
 
-    def check_diagonal_for_enemies(self, startX: int, startY: int, goalX: int, goalY: int, player: int):
-        player: int = player * 2 - 1
+    def check_diagonal_for_edible(self, startX: int, startY: int, goalX: int, goalY: int):
+        """
+        Checks if an edible enemy is present between two cells.
+        :param startX: x position of start cell
+        :param startY: y position of start cell
+        :param goalX: x position of goal cell
+        :param goalY: y position of goal cell
+        :return: Tuple containing the first enemy position
+        :rtype: ((int, int), (int, int))
+        """
         offset: (int, int) = (goalX - startX, goalY - startY)
 
         for i in range(abs(goalX - startX)):
             if (self.board.get(startX + offset[0], startY + offset[1]) == -player
                     or self.board.get(startX + i, startY + i) == -2 * player):
                 return True
+
+        return False
 
     def contains(self, x: int, y: int):
         return 0 < x < self.board.size and 0 < y < self.board.size
