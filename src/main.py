@@ -6,17 +6,27 @@ def main():
     print("Initial board=================")
     pprint_board(checker.board, [])
 
-    print("Set(x, y, value)==============")
-    checker.board.set(int(input("X: ")), int(input("Y: ")), int(input("Value: ")))
+    adding: bool = True
+    while adding:
+        print("Set(x, y, value)==============")
+        checker.board.set(int(input("X: ")), int(input("Y: ")), int(input("Value: ")))
 
-    print("Pawn move check===============")
-    checkedPawn = (int(input("X: ")), int(input("Y: ")))
+        adding = input("Add another ? (y/n)").lower() == 'y'
 
-    if checker.board.get(checkedPawn[0], checkedPawn[1]) < 0:
+    print("Piece move check===============")
+    checkedPiece = (int(input("X: ")), int(input("Y: ")))
+
+    if checker.board.get(checkedPiece[0], checkedPiece[1]) < 0:
         checker.player = -1
-    possibleMoves = checker.get_all_moves(checkedPawn[0], checkedPawn[1])
+    possibleMoves = checker.get_all_moves(checkedPiece[0], checkedPiece[1])
 
     print("Possible moves================\n" + str(possibleMoves))
+    print("Board=========================")
+    pprint_board(checker.board, possibleMoves)
+
+    print("Filtering moves===============\n")
+    filter_moves(possibleMoves)
+    print(possibleMoves)
     print("Board=========================")
     pprint_board(checker.board, possibleMoves)
 
